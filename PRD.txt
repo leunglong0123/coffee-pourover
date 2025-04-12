@@ -1,0 +1,112 @@
+# Technical Architecture  
+**System Components:**
+- **Next.js Framework**: Core application framework using TypeScript
+- **Page Router**: For navigation between views within the single-page application
+- **State Management**: React context or similar for managing brewing state
+- **Client-side Components**: For interactive timer functionality
+- **Local Storage**: For saving user preferences
+
+**Data Models:**
+- Brewing Methods:
+  - Method ID, name, icon
+  - Coffee-to-water ratio
+  - Grind size
+  - Step sequence with timing
+  - Total brew time
+  - Visual representation
+  
+- Brewing Steps:
+  - Step ID
+  - Description
+  - Duration
+  - Visual indicator
+  - Action required
+  
+- User Preferences (optional):
+  - Preferred brewing method
+  - Custom coffee amounts
+  - Dark/light mode preference
+
+**Infrastructure Requirements:**
+- Static site deployment (Vercel, Netlify, or similar)
+- Node.js v20.20.0 as specified in .nvmrc
+- No backend required as this is a client-side only application
+
+# Development Roadmap  
+**Phase 1: MVP**
+- Core application setup with Next.js and TypeScript
+- Basic UI components for timer and step display
+- Implementation of a single brewing method (Hario V60)
+- Simple timer functionality with step progression
+- Responsive design for mobile and desktop
+
+**Phase 2: Method Expansion**
+- Add support for remaining brewing methods
+  - Chemex
+  - Kalita Wave
+  - Bee House Dripper
+- Method selection interface
+- Enhanced visual guidance for each method
+- Basic recipe display
+
+**Phase 3: Enhanced User Experience**
+- User preference storage in local storage
+- Visual refinements and animations
+- Dark/light mode support
+- Adjustable coffee amount with automatic water calculation
+- Simplified onboarding for first-time users
+
+**Phase 4: Potential Future Enhancements**
+- Custom recipe creation
+- Brewing history and favorites
+- Coffee bean inventory tracking
+- Grind size visual reference
+
+# Logical Dependency Chain
+1. **Foundation (Priority 1)**
+   - Next.js project setup with TypeScript
+   - Base UI components and layout
+   - Core timer functionality
+
+2. **Core Functionality (Priority 2)**
+   - V60 brewing method implementation
+   - Step progression logic
+   - Basic visual indicators
+
+3. **Method Expansion (Priority 3)**
+   - Additional brewing methods
+   - Method selection interface
+   - Recipe display components
+
+4. **User Experience Enhancements (Priority 4)**
+   - Preferences storage
+   - UI refinements
+   - Responsive optimizations
+
+# Risks and Mitigations  
+**Technical Challenges:**
+- **Timer Accuracy**: Ensure timer remains accurate even when app is in background
+  - Mitigation: Use timestamp-based calculations rather than interval-based
+
+- **State Management Complexity**: Managing multiple brewing stages
+  - Mitigation: Clear state model with well-defined transitions
+
+- **Responsive Design for All Devices**: Ensuring usability on all screen sizes
+  - Mitigation: Mobile-first design approach with comprehensive testing
+
+**Resource Constraints:**
+- **Limited Graphics**: Visualization of brewing methods
+  - Mitigation: Start with simple iconography, enhance later
+
+- **Development Time**: Focus on core functionality first
+  - Mitigation: Clear MVP definition with phased approach
+
+# Appendix  
+**Brewing Method Specifications:**
+
+1. **Hario V60**
+   - Coffee-to-water ratio: 1:15
+   - Grind size: Medium-fine
+   - Bloom time: 30 seconds
+   - Pouring technique: Circular motion
+   - Total brew time: ~2:30-
