@@ -55,7 +55,7 @@ const BrewingPage: NextPage = () => {
     return (
       <Layout title="Loading...">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-700"></div>
         </div>
       </Layout>
     );
@@ -67,7 +67,7 @@ const BrewingPage: NextPage = () => {
         <div className="flex justify-between items-center mb-6">
           <button 
             onClick={handleBackToSelection}
-            className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+            className="flex items-center text-primary-700 hover:text-primary-800 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
@@ -132,7 +132,7 @@ const BrewingPage: NextPage = () => {
               <div className="start-brewing flex justify-center">
                 <button
                   onClick={handleStartBrewing}
-                  className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md text-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
+                  className="px-6 py-3 bg-primary-700 text-white font-medium rounded-md text-lg hover:bg-primary-800 transition-colors dark:bg-primary-700 dark:hover:bg-primary-800"
                 >
                   Start Brewing
                 </button>

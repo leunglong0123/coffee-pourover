@@ -36,7 +36,7 @@ const EditBlogPost: React.FC = () => {
     return (
       <Layout title="Loading...">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
         </div>
       </Layout>
     );
@@ -52,7 +52,7 @@ const EditBlogPost: React.FC = () => {
           </p>
           <button
             onClick={() => router.push('/blog')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-primary-700 text-white rounded-md hover:bg-primary-800 transition-colors"
           >
             Back to Blog
           </button>

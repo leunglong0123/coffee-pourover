@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
       <header className="bg-white dark:bg-gray-800 shadow-sm">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <Link href="/">
-            <span className="text-xl font-bold text-blue-600 dark:text-blue-400 cursor-pointer">
+            <span className="text-xl font-bold text-primary-700 dark:text-primary-400 cursor-pointer">
               Coffee Pourover
             </span>
           </Link>
@@ -26,8 +26,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
               <span className={`
                 nav-link cursor-pointer
                 ${router.pathname === '/' 
-                  ? 'text-blue-600 dark:text-blue-400 font-medium' 
-                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400'
+                  ? 'text-primary-700 dark:text-primary-400 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }
               `}>
                 Home
@@ -38,8 +38,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
               <span className={`
                 nav-link cursor-pointer
                 ${router.pathname.startsWith('/brewing') 
-                  ? 'text-blue-600 dark:text-blue-400 font-medium' 
-                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400'
+                  ? 'text-primary-700 dark:text-primary-400 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }
               `}>
                 Brew
@@ -50,8 +50,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
               <span className={`
                 nav-link cursor-pointer
                 ${router.pathname.startsWith('/blog') 
-                  ? 'text-blue-600 dark:text-blue-400 font-medium' 
-                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400'
+                  ? 'text-primary-700 dark:text-primary-400 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }
               `}>
                 Blog

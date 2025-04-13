@@ -46,7 +46,7 @@ const MethodCard: React.FC<MethodCardProps> = ({
       className={`
         method-card p-5 rounded-lg cursor-pointer transition-all duration-200 transform hover:scale-102 hover:-translate-y-1
         ${isSelected 
-          ? 'bg-blue-50 border-2 border-blue-500 shadow-md dark:bg-blue-900/30 dark:border-blue-400' 
+          ? 'bg-primary-50 border-2 border-primary-700 shadow-md dark:bg-primary-900/30 dark:border-primary-400' 
           : 'bg-white hover:bg-gray-50 border border-gray-200 hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-750'
         }
         ${className}
@@ -65,7 +65,7 @@ const MethodCard: React.FC<MethodCardProps> = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex items-center">
           <span className="text-3xl mr-2" aria-hidden="true">{icon}</span>
-          <h3 className={`text-lg font-bold ${isSelected ? 'text-blue-700 dark:text-blue-300' : 'dark:text-white'}`}>
+          <h3 className={`text-lg font-bold ${isSelected ? 'text-primary-700 dark:text-primary-300' : 'dark:text-white'}`}>
             {name}
           </h3>
         </div>
@@ -98,8 +98,8 @@ const MethodCard: React.FC<MethodCardProps> = ({
       </div>
       
       {isSelected && (
-        <div className="mt-4 pt-3 border-t border-blue-200 dark:border-blue-800 text-center">
-          <span className="inline-block px-3 py-1 bg-blue-500 text-white text-xs rounded-full dark:bg-blue-600">
+        <div className="mt-4 pt-3 border-t border-primary-200 dark:border-primary-800 text-center">
+          <span className="inline-block px-3 py-1 bg-primary-700 text-white text-xs rounded-full dark:bg-primary-600">
             Selected Method
           </span>
         </div>
@@ -107,7 +107,7 @@ const MethodCard: React.FC<MethodCardProps> = ({
       
       {!isSelected && (
         <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-700 text-center">
-          <span className="text-blue-500 text-sm dark:text-blue-400">
+          <span className="text-primary-700 text-sm dark:text-primary-400">
             Click to select
           </span>
         </div>

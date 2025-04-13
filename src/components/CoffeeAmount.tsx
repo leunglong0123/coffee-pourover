@@ -134,15 +134,15 @@ const CoffeeAmount: React.FC<CoffeeAmountProps> = ({
           </label>
           <div className={`px-3 py-2 rounded border transition-all duration-300 ${
             showFeedback 
-              ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700' 
+              ? 'bg-primary-50 border-primary-300 dark:bg-primary-900/30 dark:border-primary-700' 
               : 'bg-gray-100 border-gray-200 dark:bg-gray-800 dark:border-gray-700'
           } dark:text-white flex justify-between items-center`}>
-            <span className={`transition-all ${showFeedback ? 'text-blue-600 dark:text-blue-400 font-medium' : ''}`}>
+            <span className={`transition-all ${showFeedback ? 'text-primary-600 dark:text-primary-400 font-medium' : ''}`}>
               {Math.round(waterAmount)}
             </span>
             
             {showFeedback && (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500 dark:text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary-500 dark:text-primary-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
             )}
@@ -157,7 +157,7 @@ const CoffeeAmount: React.FC<CoffeeAmountProps> = ({
         
         <div className={`text-sm py-2 px-3 rounded-md transition-all duration-300 ${
           coffeeAmount !== DEFAULT_COFFEE_AMOUNT 
-            ? 'bg-blue-50 text-blue-800 border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50' 
+            ? 'bg-primary-50 text-primary-800 border border-primary-100 dark:bg-primary-900/20 dark:text-primary-300 dark:border-primary-800/50' 
             : 'text-gray-500 dark:text-gray-400'
         }`}>
           <span className="font-medium">Brew Tip:</span> {getBrewInstructions()}

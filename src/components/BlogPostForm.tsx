@@ -170,7 +170,7 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onCancel }) => {
             <button
               type="button"
               onClick={() => setPreviewMode(false)}
-              className="px-4 py-2 text-sm font-medium rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-md bg-primary-700 text-white hover:bg-primary-800 transition-colors"
             >
               Back to Editing
             </button>
@@ -189,7 +189,7 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onCancel }) => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter post title"
-              className="w-full px-3 py-2 border rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border rounded-md border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600">{errors.title}</p>
@@ -256,7 +256,7 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onCancel }) => {
               <button
                 type="button"
                 onClick={handleAddTag}
-                className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-primary-600 text-white rounded-r-md hover:bg-primary-700 transition-colors"
               >
                 Add
               </button>
@@ -268,13 +268,13 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onCancel }) => {
               {tags.map((tag, index) => (
                 <div
                   key={index}
-                  className="flex items-center bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full"
+                  className="flex items-center bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-3 py-1 rounded-full"
                 >
                   <span>{tag}</span>
                   <button
                     type="button"
                     onClick={() => handleRemoveTag(tag)}
-                    className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                    className="ml-2 text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300"
                   >
                     &times;
                   </button>
@@ -355,7 +355,7 @@ const BlogPostForm: React.FC<BlogPostFormProps> = ({ post, onCancel }) => {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50"
               disabled={isSubmitting}
             >
               {isSubmitting 

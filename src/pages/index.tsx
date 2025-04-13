@@ -44,7 +44,7 @@ const HomePage: NextPage = () => {
           <div className="mb-8 flex justify-center">
             <button
               onClick={() => router.push(`/brewing?method=${preferredMethodId}`)}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-md text-lg hover:bg-blue-700 transition-colors dark:bg-blue-700 dark:hover:bg-blue-800"
+              className="px-6 py-3 bg-primary-700 text-white font-medium rounded-md text-lg hover:bg-primary-800 transition-colors dark:bg-primary-700 dark:hover:bg-primary-800"
             >
               Start Brewing with {brewingMethods.find(m => m.id === preferredMethodId)?.name}
             </button>

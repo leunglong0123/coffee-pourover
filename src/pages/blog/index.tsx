@@ -86,7 +86,7 @@ const BlogIndex: React.FC<BlogIndexProps> = ({ initialPosts, allTags }) => {
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search blog posts..."
-              className="w-full md:w-64 pl-10 pr-4 py-2 border rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full md:w-64 pl-10 pr-4 py-2 border rounded-lg border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,7 @@ const BlogIndex: React.FC<BlogIndexProps> = ({ initialPosts, allTags }) => {
           {(selectedTag || searchQuery) && (
             <button
               onClick={clearFilters}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center ml-auto"
+              className="text-sm text-primary-700 dark:text-primary-400 hover:underline flex items-center ml-auto"
             >
               Clear filters
               <svg
@@ -138,7 +138,7 @@ const BlogIndex: React.FC<BlogIndexProps> = ({ initialPosts, allTags }) => {
               onClick={() => handleTagClick(tag)}
               className={`text-sm px-3 py-1 rounded-full transition-colors ${
                 selectedTag === tag
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-primary-700 text-white'
                   : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
@@ -216,7 +216,7 @@ const BlogIndex: React.FC<BlogIndexProps> = ({ initialPosts, allTags }) => {
                       onClick={() => setPage(idx + 1)}
                       className={`w-9 h-9 rounded-md ${
                         page === idx + 1
-                          ? 'bg-blue-600 text-white'
+                          ? 'bg-primary-700 text-white'
                           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                       }`}
                     >

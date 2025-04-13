@@ -87,6 +87,49 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
     return Math.round(waterPoured);
   };
 
+  // Calculate water amount for a specific step
+  const calculateStepWaterAmount = (step: any, isNext = false) => {
+    if (!brewingMethod) return null;
+    
+    // Get the standard water amount (before any adjustments)
+    const standardWaterAmount = adjustedWaterAmount || 
+      calculateWaterAmount(DEFAULT_COFFEE_AMOUNT, brewingMethod.ratio);
+    
+    // Get all pour steps
+    const pourSteps = brewingMethod.steps.filter(s => 
+      s.description.toLowerCase().includes('pour') || 
+      s.description.toLowerCase().includes('add water') ||
+      s.description.toLowerCase().includes('bloom')
+    );
+    
+    // If no pour steps or this step is not a pour step, return null
+    if (!pourSteps.length) return null;
+    
+    const isPourStep = step.description.toLowerCase().includes('pour') || 
+                       step.description.toLowerCase().includes('add water') ||
+                       step.description.toLowerCase().includes('bloom');
+    
+    if (!isPourStep) return null;
+    
+    // Calculate water per pour step
+    const waterPerPourStep = Math.round(standardWaterAmount / pourSteps.length);
+    
+    // Get the index of this pour step
+    const stepIndex = pourSteps.findIndex(s => s.id === step.id);
+    if (stepIndex === -1) return null;
+    
+    // Customize by step type
+    if (step.description.toLowerCase().includes('bloom')) {
+      // Bloom is typically 2x coffee weight
+      const coffeeAmount = adjustedWaterAmount 
+        ? adjustedWaterAmount / brewingMethod.ratio.water * brewingMethod.ratio.coffee
+        : DEFAULT_COFFEE_AMOUNT;
+      return Math.round(coffeeAmount * 2);
+    } else {
+      return waterPerPourStep;
+    }
+  };
+
   // Helper to adjust water amounts in instructions
   const adjustWaterAmount = (text: string) => {
     if (!adjustedWaterAmount || waterAdjustmentRatio === 1) return text;
@@ -99,6 +142,35 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
       }
       return match;
     });
+  };
+
+  // Enhance step description with water amount
+  const enhanceDescription = (step: any, isNext = false) => {
+    if (!step) return '';
+    
+    const waterAmount = calculateStepWaterAmount(step, isNext);
+    let description = step.description;
+    
+    if (waterAmount) {
+      // Check if the description already includes specific ml values
+      const hasSpecificMl = /\d+\s*ml/i.test(description);
+      
+      if (!hasSpecificMl) {
+        if (description.toLowerCase().includes('pour') || 
+            description.toLowerCase().includes('add water')) {
+          // Replace generic pour instruction with specific amount
+          description = description.replace(
+            /(pour|add water|add)/i, 
+            `$1 ${waterAmount}ml of water`
+          );
+        } else if (description.toLowerCase().includes('bloom')) {
+          // Add water amount for bloom
+          description = `${description} (${waterAmount}ml)`;
+        }
+      }
+    }
+    
+    return adjustWaterAmount(description);
   };
 
   if (!isRunning || !currentStep) {
@@ -136,7 +208,7 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
         </div>
         
         <h3 className="step-title text-xl font-bold mb-4 dark:text-white">
-          {adjustWaterAmount(currentStep.description)}
+          {enhanceDescription(currentStep)}
         </h3>
         
         <div className="step-progress mb-6">
@@ -163,14 +235,14 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
         </div>
         
         {waterAdjustmentRatio !== 1 && (
-          <div className="water-adjustment-indicator mb-4 p-3 bg-blue-50 text-blue-800 rounded-md dark:bg-blue-900/30 dark:text-blue-300 dark:border dark:border-blue-800/50">
+          <div className="water-adjustment-indicator mb-4 p-3 bg-primary-50 text-primary-800 rounded-md dark:bg-primary-900/30 dark:text-primary-300 dark:border dark:border-primary-800/50">
             <span className="font-medium">Adjusted Recipe:</span> All water amounts shown are adjusted based on your custom coffee amount.
           </div>
         )}
         
         {currentStep.actionRequired && (
           <div className="action-indicator mb-4 p-3 bg-yellow-100 text-yellow-800 rounded-md dark:bg-yellow-900 dark:text-yellow-200">
-            <span className="font-medium">Action Required:</span> {adjustWaterAmount(currentStep.description)}
+            <span className="font-medium">Action Required:</span> {enhanceDescription(currentStep)}
           </div>
         )}
         
@@ -178,7 +250,7 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
           <div className="mt-6 flex justify-end">
             <button 
               onClick={skipToNextStep}
-              className="px-4 py-2 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/50 flex items-center shadow-sm"
+              className="px-4 py-2 text-sm bg-primary-100 text-primary-700 rounded hover:bg-primary-200 transition-colors dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-800/50 flex items-center shadow-sm"
               aria-label="Skip to next step"
             >
               <span>Skip to Next Step</span>
@@ -192,13 +264,13 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
       
       {/* Next Step Card */}
       {nextStep ? (
-        <div className="next-step-card p-6 bg-white rounded-lg shadow-md dark:bg-gray-800 border-l-4 border-blue-500 dark:border-blue-600">
+        <div className="next-step-card p-6 bg-white rounded-lg shadow-md dark:bg-gray-800 border-l-4 border-primary-700 dark:border-primary-600">
           <div className="mb-3">
-            <h4 className="text-lg font-semibold text-blue-600 dark:text-blue-400">Coming Up Next</h4>
+            <h4 className="text-lg font-semibold text-primary-700 dark:text-primary-400">Coming Up Next</h4>
           </div>
           
-          <div className="p-3 bg-blue-50 rounded-md dark:bg-blue-900/20 dark:text-blue-100">
-            <p className="font-medium">{adjustWaterAmount(nextStep.description)}</p>
+          <div className="p-3 bg-primary-50 rounded-md dark:bg-primary-900/20 dark:text-primary-100">
+            <p className="font-medium">{enhanceDescription(nextStep, true)}</p>
           </div>
           
           {nextStep.actionRequired && (

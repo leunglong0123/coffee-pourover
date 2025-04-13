@@ -36,7 +36,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
           <div className="p-5 flex-grow flex flex-col">
             <div className="flex justify-between items-center mb-2">
               <div className="text-sm text-gray-500 dark:text-gray-400">{formattedDate}</div>
-              <div className="text-sm text-blue-600 dark:text-blue-400">{post.readingTime} min read</div>
+              <div className="text-sm text-primary-700 dark:text-primary-400">{post.readingTime} min read</div>
             </div>
             
             <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2 line-clamp-2">{post.title}</h2>
@@ -60,7 +60,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
                 )}
               </div>
               
-              <div className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center">
+              <div className="text-sm font-medium text-primary-700 dark:text-primary-400 flex items-center">
                 Read more
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />

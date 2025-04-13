@@ -27,7 +27,7 @@ const BlogPostPage: React.FC<BlogPostProps> = ({ post, relatedPosts }) => {
             The blog post you're looking for doesn't exist or has been removed.
           </p>
           <Link href="/blog">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            <button className="px-4 py-2 bg-primary-700 text-white rounded-md hover:bg-primary-800 transition-colors">
               Back to Blog
             </button>
           </Link>
@@ -75,7 +75,7 @@ const BlogPostPage: React.FC<BlogPostProps> = ({ post, relatedPosts }) => {
         {/* Back to blog link */}
         <div className="mb-6">
           <Link href="/blog">
-            <button className="flex items-center text-blue-600 dark:text-blue-400 hover:underline">
+            <button className="flex items-center text-primary-700 dark:text-primary-400 hover:underline">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
@@ -134,7 +134,7 @@ const BlogPostPage: React.FC<BlogPostProps> = ({ post, relatedPosts }) => {
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(`https://coffeepourover.com/blog/${post.slug}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-400 hover:bg-blue-500 transition-colors text-white"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-400 hover:bg-primary-500 transition-colors text-white"
               aria-label="Share on Twitter"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -145,7 +145,7 @@ const BlogPostPage: React.FC<BlogPostProps> = ({ post, relatedPosts }) => {
               href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://coffeepourover.com/blog/${post.slug}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-700 transition-colors text-white"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-600 hover:bg-primary-700 transition-colors text-white"
               aria-label="Share on Facebook"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -156,7 +156,7 @@ const BlogPostPage: React.FC<BlogPostProps> = ({ post, relatedPosts }) => {
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(`https://coffeepourover.com/blog/${post.slug}`)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-800 hover:bg-blue-900 transition-colors text-white"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-primary-800 hover:bg-primary-900 transition-colors text-white"
               aria-label="Share on LinkedIn"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">

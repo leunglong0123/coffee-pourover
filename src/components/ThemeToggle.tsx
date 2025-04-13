@@ -71,7 +71,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ className = '' }) => {
           theme-toggle p-2 rounded-full transition-colors
           ${isDarkMode 
             ? 'bg-gray-700 text-yellow-300 hover:bg-gray-600' 
-            : 'bg-blue-100 text-gray-700 hover:bg-blue-200'
+            : 'bg-primary-100 text-gray-700 hover:bg-primary-200'
           }
           ${isUsingSystemPreference ? 'ring-2 ring-green-400 ring-opacity-50' : ''}
           ${className}

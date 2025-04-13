@@ -51,7 +51,7 @@ const Timer: React.FC<TimerProps> = ({ className = '' }) => {
         aria-label={`Brewing progress: ${Math.round(progressPercent)}%`}
       >
         <div 
-          className="h-full bg-blue-500 dark:bg-blue-400 transition-all duration-100 ease-linear"
+          className="h-full bg-primary-700 dark:bg-primary-400 transition-all duration-100 ease-linear"
           style={{ width: `${progressPercent}%` }}
         />
       </div>
