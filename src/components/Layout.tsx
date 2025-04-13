@@ -45,6 +45,18 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
                 Brew
               </span>
             </Link>
+
+            <Link href="/blog">
+              <span className={`
+                nav-link cursor-pointer
+                ${router.pathname.startsWith('/blog') 
+                  ? 'text-blue-600 dark:text-blue-400 font-medium' 
+                  : 'text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400'
+                }
+              `}>
+                Blog
+              </span>
+            </Link>
             
             <ThemeToggle />
           </nav>
