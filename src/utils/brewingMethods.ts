@@ -302,15 +302,144 @@ export const beeHouseMethod: BrewingMethod = {
   visualRepresentation: 'beehouse',
 };
 
+// Tetsu Kasuya's 4:6 Method - World Champion Barista Technique
+export const fourSixMethod: BrewingMethod = {
+  id: 'foursix',
+  name: '世界冠軍 4:6 手沖法',
+  icon: '🏆',
+  ratio: { coffee: 1, water: 15 },
+  grindSize: 'medium-coarse',
+  steps: [
+    {
+      id: 'foursix-step1',
+      description: 'Rinse V60 filter with hot water and discard water',
+      duration: 15,
+      actionRequired: true,
+      visualIndicator: 'rinse',
+    },
+    {
+      id: 'foursix-step2',
+      description: 'Add 20g coffee grounds to filter and make a well in center',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'add-coffee',
+    },
+    {
+      id: 'foursix-step3',
+      description: 'First pour: Add 50ml water in circular motion from center outward',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'pour-1',
+      waterPortion: 0.167, // 50ml out of 300ml = 16.7%
+    },
+    {
+      id: 'foursix-step4',
+      description: 'Wait for all water to drain through (should finish by 45 seconds)',
+      duration: 35,
+      actionRequired: false,
+      visualIndicator: 'wait',
+    },
+    {
+      id: 'foursix-step5',
+      description: 'Second pour: Add 70ml water, gently shake dripper to mix',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'pour-2',
+      waterPortion: 0.233, // 70ml out of 300ml = 23.3%
+    },
+    {
+      id: 'foursix-step6',
+      description: 'Wait for water to drain (should finish by 1:30)',
+      duration: 35,
+      actionRequired: false,
+      visualIndicator: 'wait',
+    },
+    {
+      id: 'foursix-step7',
+      description: 'Third pour: Add 60ml water, gently shake dripper',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'pour-3',
+      waterPortion: 0.200, // 60ml out of 300ml = 20%
+    },
+    {
+      id: 'foursix-step8',
+      description: 'Wait for water to drain (should finish by 2:15)',
+      duration: 35,
+      actionRequired: false,
+      visualIndicator: 'wait',
+    },
+    {
+      id: 'foursix-step9',
+      description: 'Fourth pour: Add 60ml water, gently shake dripper',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'pour-1',
+      waterPortion: 0.200, // 60ml out of 300ml = 20%
+    },
+    {
+      id: 'foursix-step10',
+      description: 'Wait for water to drain (should finish by 3:00)',
+      duration: 35,
+      actionRequired: false,
+      visualIndicator: 'wait',
+    },
+    {
+      id: 'foursix-step11',
+      description: 'Fifth pour: Add final 60ml water, gently shake dripper',
+      duration: 10,
+      actionRequired: true,
+      visualIndicator: 'pour-2',
+      waterPortion: 0.200, // 60ml out of 300ml = 20%
+    },
+    {
+      id: 'foursix-step12',
+      description: 'Final drain: Allow all water to finish draining by 3:30',
+      duration: 20,
+      actionRequired: false,
+      visualIndicator: 'drain',
+    },
+  ],
+  totalTime: 210, // 3:30 in seconds
+  visualRepresentation: 'v60',
+};
+
 // Export a collection of all brewing methods
 export const brewingMethods: BrewingMethod[] = [
   v60Method,
   chemexMethod,
   kalitaMethod,
   beeHouseMethod,
+  fourSixMethod,
 ];
 
-// Helper function to get a brewing method by ID
+// Helper function to get a brewing method by ID (includes custom guides)
 export const getBrewingMethodById = (id: string): BrewingMethod | undefined => {
-  return brewingMethods.find(method => method.id === id);
+  // First check built-in methods
+  const builtInMethod = brewingMethods.find(method => method.id === id);
+  if (builtInMethod) {
+    return builtInMethod;
+  }
+
+  // Then check custom guides (dynamically loaded)
+  try {
+    const LocalStorageService = require('../services/LocalStorageService').default;
+    const customGuides = LocalStorageService.getCustomGuides();
+    return customGuides.find((guide: any) => guide.id === id);
+  } catch (error) {
+    console.error('Failed to load custom guides:', error);
+    return undefined;
+  }
+};
+
+// Helper function to get all brewing methods (built-in + custom)
+export const getAllBrewingMethods = (): BrewingMethod[] => {
+  try {
+    const LocalStorageService = require('../services/LocalStorageService').default;
+    const customGuides = LocalStorageService.getCustomGuides();
+    return [...brewingMethods, ...customGuides];
+  } catch (error) {
+    console.error('Failed to load custom guides:', error);
+    return brewingMethods;
+  }
 }; 

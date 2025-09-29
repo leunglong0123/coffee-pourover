@@ -5,6 +5,7 @@ import Layout from '../../components/Layout';
 import Timer from '../../components/Timer';
 import StepDisplay from '../../components/StepDisplay';
 import CoffeeAmount from '../../components/CoffeeAmount';
+import FourSixMethodInfo from '../../components/FourSixMethodInfo';
 import { useTimer } from '../../context/TimerContext';
 import { getBrewingMethodById, v60Method } from '../../utils/brewingMethods';
 import { BrewingMethod, calculateWaterAmount, DEFAULT_COFFEE_AMOUNT } from '../../models';
@@ -15,6 +16,7 @@ const BrewingPage: NextPage = () => {
   const [method, setMethod] = useState<BrewingMethod | null>(null);
   const { isRunning, startTimer, resetTimer } = useTimer();
   const [adjustedWaterAmount, setAdjustedWaterAmount] = useState<number | null>(null);
+  const [coffeeDose, setCoffeeDose] = useState<number>(DEFAULT_COFFEE_AMOUNT);
   
   // Set method based on query parameter or default to V60
   useEffect(() => {
@@ -49,6 +51,7 @@ const BrewingPage: NextPage = () => {
 
   const handleCoffeeAmountChange = (coffee: number, water: number) => {
     setAdjustedWaterAmount(water);
+    setCoffeeDose(coffee);
   };
   
   if (!method) {
@@ -145,7 +148,10 @@ const BrewingPage: NextPage = () => {
           </div>
           
           <div className="brewing-steps">
-            <StepDisplay adjustedWaterAmount={adjustedWaterAmount} />
+            <StepDisplay
+              adjustedWaterAmount={adjustedWaterAmount}
+              coffeeDose={coffeeDose}
+            />
           </div>
         </div>
       </div>
