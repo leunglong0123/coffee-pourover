@@ -37,8 +37,8 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
             <Link href="/brewing">
               <span className={`
                 nav-link cursor-pointer
-                ${router.pathname.startsWith('/brewing') 
-                  ? 'text-primary-700 dark:text-primary-400 font-medium' 
+                ${router.pathname.startsWith('/brewing')
+                  ? 'text-primary-700 dark:text-primary-400 font-medium'
                   : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }
               `}>
@@ -46,11 +46,35 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
               </span>
             </Link>
 
+            <Link href="/guides">
+              <span className={`
+                nav-link cursor-pointer
+                ${router.pathname.startsWith('/guides')
+                  ? 'text-primary-700 dark:text-primary-400 font-medium'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
+                }
+              `}>
+                Guides
+              </span>
+            </Link>
+
+            <Link href="/history">
+              <span className={`
+                nav-link cursor-pointer
+                ${router.pathname.startsWith('/history')
+                  ? 'text-primary-700 dark:text-primary-400 font-medium'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
+                }
+              `}>
+                History
+              </span>
+            </Link>
+
             <Link href="/blog">
               <span className={`
                 nav-link cursor-pointer
-                ${router.pathname.startsWith('/blog') 
-                  ? 'text-primary-700 dark:text-primary-400 font-medium' 
+                ${router.pathname.startsWith('/blog')
+                  ? 'text-primary-700 dark:text-primary-400 font-medium'
                   : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
                 }
               `}>

@@ -1,15 +1,17 @@
 import React from 'react';
 import { useTimer } from '../context/TimerContext';
-import { formatTime, calculateWaterAmount, DEFAULT_COFFEE_AMOUNT } from '../models';
+import { formatTime, calculateWaterAmount, calculateStepWaterAmount, DEFAULT_COFFEE_AMOUNT } from '../models';
 
 interface StepDisplayProps {
   className?: string;
   adjustedWaterAmount?: number | null;
+  coffeeDose?: number; // Add coffee dose to calculate water portions accurately
 }
 
-const StepDisplay: React.FC<StepDisplayProps> = ({ 
+const StepDisplay: React.FC<StepDisplayProps> = ({
   className = '',
-  adjustedWaterAmount = null
+  adjustedWaterAmount = null,
+  coffeeDose = DEFAULT_COFFEE_AMOUNT
 }) => {
   const { 
     currentStep, 
@@ -37,97 +39,57 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
   // Calculate total water poured based on completed steps and current progress
   const calculateTotalWaterPoured = () => {
     if (!brewingMethod || !currentStep) return 0;
-    
-    // Get the standard water amount (before any adjustments)
-    const standardWaterAmount = adjustedWaterAmount || 
-      calculateWaterAmount(DEFAULT_COFFEE_AMOUNT, brewingMethod.ratio);
-    
-    // Approximate water distribution per step (only count pour steps)
-    const pourSteps = brewingMethod.steps.filter(step => 
-      step.description.toLowerCase().includes('pour') || 
-      step.description.toLowerCase().includes('add water') ||
-      step.description.toLowerCase().includes('bloom')
-    );
-    
-    // If no pour steps, return 0
-    if (!pourSteps.length) return 0;
-    
-    // Determine water amount per pour step
-    const waterPerPourStep = standardWaterAmount / pourSteps.length;
-    
-    // Count completed pour steps
-    let completedPourSteps = 0;
-    let currentPourStepIndex = -1;
-    
-    for (let i = 0; i < brewingMethod.steps.length; i++) {
+
+    let totalWaterPoured = 0;
+    const currentStepIndex = brewingMethod.steps.findIndex(step => step.id === currentStep.id);
+
+    // Add water from completed steps
+    for (let i = 0; i < currentStepIndex; i++) {
       const step = brewingMethod.steps[i];
-      const isPourStep = pourSteps.some(pourStep => pourStep.id === step.id);
-      
-      // If this is before the current step and it's a pour step
-      if (step.id === currentStep.id) {
-        if (isPourStep) {
-          currentPourStepIndex = pourSteps.findIndex(pourStep => pourStep.id === step.id);
-        }
-        break;
-      }
-      
-      if (isPourStep) {
-        completedPourSteps++;
+      if (step.waterPortion && step.waterPortion > 0) {
+        const stepWater = calculateStepWaterAmount(step, coffeeDose, brewingMethod.ratio);
+        totalWaterPoured += stepWater;
       }
     }
-    
-    // Calculate water poured in completed steps
-    let waterPoured = completedPourSteps * waterPerPourStep;
-    
-    // Add water from current step if it's a pour step
-    if (currentPourStepIndex !== -1) {
-      waterPoured += (stepProgressPercent / 100) * waterPerPourStep;
+
+    // Add partial water from current step if it has water portions
+    if (currentStep.waterPortion && currentStep.waterPortion > 0) {
+      const currentStepWater = calculateStepWaterAmount(currentStep, coffeeDose, brewingMethod.ratio);
+      totalWaterPoured += (stepProgressPercent / 100) * currentStepWater;
     }
-    
-    return Math.round(waterPoured);
+
+    return Math.round(totalWaterPoured);
   };
 
-  // Calculate water amount for a specific step
-  const calculateStepWaterAmount = (step: any, isNext = false) => {
-    if (!brewingMethod) return null;
-    
-    // Get the standard water amount (before any adjustments)
-    const standardWaterAmount = adjustedWaterAmount || 
-      calculateWaterAmount(DEFAULT_COFFEE_AMOUNT, brewingMethod.ratio);
-    
-    // Get all pour steps
-    const pourSteps = brewingMethod.steps.filter(s => 
-      s.description.toLowerCase().includes('pour') || 
-      s.description.toLowerCase().includes('add water') ||
-      s.description.toLowerCase().includes('bloom')
-    );
-    
-    // If no pour steps or this step is not a pour step, return null
-    if (!pourSteps.length) return null;
-    
-    const isPourStep = step.description.toLowerCase().includes('pour') || 
-                       step.description.toLowerCase().includes('add water') ||
-                       step.description.toLowerCase().includes('bloom');
-    
-    if (!isPourStep) return null;
-    
-    // Calculate water per pour step
-    const waterPerPourStep = Math.round(standardWaterAmount / pourSteps.length);
-    
-    // Get the index of this pour step
-    const stepIndex = pourSteps.findIndex(s => s.id === step.id);
-    if (stepIndex === -1) return null;
-    
-    // Customize by step type
-    if (step.description.toLowerCase().includes('bloom')) {
-      // Bloom is typically 2x coffee weight
-      const coffeeAmount = adjustedWaterAmount 
-        ? adjustedWaterAmount / brewingMethod.ratio.water * brewingMethod.ratio.coffee
-        : DEFAULT_COFFEE_AMOUNT;
-      return Math.round(coffeeAmount * 2);
-    } else {
-      return waterPerPourStep;
+  // Calculate total water that will be poured after current step completes
+  const calculateTotalWaterAfterCurrentStep = () => {
+    if (!brewingMethod || !currentStep) return 0;
+
+    let totalWaterPoured = 0;
+    const currentStepIndex = brewingMethod.steps.findIndex(step => step.id === currentStep.id);
+
+    // Add water from completed steps
+    for (let i = 0; i < currentStepIndex; i++) {
+      const step = brewingMethod.steps[i];
+      if (step.waterPortion && step.waterPortion > 0) {
+        const stepWater = calculateStepWaterAmount(step, coffeeDose, brewingMethod.ratio);
+        totalWaterPoured += stepWater;
+      }
     }
+
+    // Add full water from current step if it has water portions
+    if (currentStep.waterPortion && currentStep.waterPortion > 0) {
+      const currentStepWater = calculateStepWaterAmount(currentStep, coffeeDose, brewingMethod.ratio);
+      totalWaterPoured += currentStepWater;
+    }
+
+    return Math.round(totalWaterPoured);
+  };
+
+  // Calculate water amount for a specific step using new portion system
+  const getStepWaterAmount = (step: any) => {
+    if (!brewingMethod || !step.waterPortion) return null;
+    return calculateStepWaterAmount(step, coffeeDose, brewingMethod.ratio);
   };
 
   // Helper to adjust water amounts in instructions
@@ -147,29 +109,23 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
   // Enhance step description with water amount
   const enhanceDescription = (step: any, isNext = false) => {
     if (!step) return '';
-    
-    const waterAmount = calculateStepWaterAmount(step, isNext);
+
+    const waterAmount = getStepWaterAmount(step);
     let description = step.description;
-    
-    if (waterAmount) {
+
+    if (waterAmount && waterAmount > 0) {
       // Check if the description already includes specific ml values
       const hasSpecificMl = /\d+\s*ml/i.test(description);
-      
+
       if (!hasSpecificMl) {
-        if (description.toLowerCase().includes('pour') || 
-            description.toLowerCase().includes('add water')) {
-          // Replace generic pour instruction with specific amount
-          description = description.replace(
-            /(pour|add water|add)/i, 
-            `$1 ${waterAmount}ml of water`
-          );
-        } else if (description.toLowerCase().includes('bloom')) {
-          // Add water amount for bloom
-          description = `${description} (${waterAmount}ml)`;
+        // For any step with water portion, show the amount
+        if (step.waterPortion > 0) {
+          const percentage = Math.round(step.waterPortion * 100);
+          description = `${description} (${waterAmount}ml - ${percentage}% of total water)`;
         }
       }
     }
-    
+
     return adjustWaterAmount(description);
   };
 
@@ -221,17 +177,28 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
         </div>
         
         {/* Brewing Stats */}
-        <div className="brewing-stats grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded-md mb-4 dark:bg-gray-700/50">
+        <div className={`brewing-stats grid gap-2 bg-gray-50 p-3 rounded-md mb-4 dark:bg-gray-700/50 ${
+          currentStep.waterPortion && currentStep.waterPortion > 0 ? 'grid-cols-3' : 'grid-cols-2'
+        }`}>
           <div className="stat-item text-center">
             <div className="text-gray-500 text-xs uppercase dark:text-gray-400">Total Time</div>
-            <div className="font-medium dark:text-white">{formatTime(currentTime)} / {formatTime(totalTime)}</div>
+            <div className="font-medium dark:text-white text-sm">{formatTime(currentTime)} / {formatTime(totalTime)}</div>
           </div>
           <div className="stat-item text-center">
             <div className="text-gray-500 text-xs uppercase dark:text-gray-400">Water Poured</div>
-            <div className="font-medium dark:text-white">
+            <div className="font-medium dark:text-white text-sm">
               ~{calculateTotalWaterPoured()} ml
             </div>
           </div>
+          {/* Only show "After This Step" for pour steps */}
+          {currentStep.waterPortion && currentStep.waterPortion > 0 && (
+            <div className="stat-item text-center">
+              <div className="text-gray-500 text-xs uppercase dark:text-gray-400">After This Step</div>
+              <div className="font-medium dark:text-white text-sm">
+                ~{calculateTotalWaterAfterCurrentStep()} ml
+              </div>
+            </div>
+          )}
         </div>
         
         {waterAdjustmentRatio !== 1 && (

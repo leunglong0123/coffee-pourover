@@ -1,0 +1,262 @@
+# Phase 2 — Custom Guides, Brew History & Taste Profiling
+
+## 1) Objectives & Scope
+
+### Goals
+- **Custom Brewing Guides**: Let users create and save custom brewing guides (per method or fully custom)
+- **Brew Session History**: Record brew sessions to a local history with notes and a taste profile
+- **Taste Profile System**: Provide a 2-axis taste profile control (two draggable sliders/bars) and give real-time brewing recommendations (grind, ratio, yield, etc.) based on the profile
+- **Data Layer**: Introduce a LocalStorage Service to abstract persistence and support future features
+
+### Out of Scope (Phase 2)
+- Cloud sync / multi-device synchronization
+- Media uploads (photos, videos)
+- Bean inventory management
+- Advanced analytics and charts
+- Export/import functionality
+- Social sharing features
+
+## 2) User Stories & Acceptance Criteria
+
+### 2.1 Create Custom Brewing Guide
+
+**Story**: As a user, I can create a custom brewing guide (steps, timings, ratio, grind, visuals) and save it locally.
+
+**Acceptance Criteria**:
+- **Guide Creation Form**: "New Guide" CTA opens a comprehensive form with:
+  - Name (required, max 50 chars)
+  - Base Method (select existing: V60/Chemex/Kalita/Bee House, or "Custom")
+  - Coffee-to-water ratio (1:X format, X between 10-20)
+  - Grind size (dropdown + free text field)
+  - Steps builder with drag-and-drop reordering
+- **Step Configuration**: Each step includes:
+  - Description (required, max 200 chars)
+  - Duration in seconds (required, 1-300 range)
+  - Action type (enum: pour, wait, stir, add-coffee, rinse, etc.)
+  - Visual indicator (icon selection from predefined set)
+- **Real-time Validation**:
+  - Name uniqueness check against existing guides
+  - At least 1 step required
+  - Total duration must be > 0
+  - Coffee ratio validation (reasonable ranges)
+- **Preview & Save**:
+  - Live preview of step progression timeline
+  - Auto-calculated total brew time
+  - Save persists to LocalStorage with versioning
+  - Guide becomes immediately selectable like built-in methods
+- **Guide Management**:
+  - Edit existing custom guides (updated_at timestamp bump)
+  - Duplicate guide functionality (creates copy with "Copy of X" name)
+  - Delete custom guides (confirmation dialog required)
+
+### 2.2 Brew Session & History
+
+**Story**: As a user, I can start a brew using any guide, then save a session record with notes and taste profile.
+
+**Acceptance Criteria**:
+- **Session Start**: "Start Brew" from any selected guide launches the timer/step progression
+- **Session Completion**: On finish (or manual stop), prompt to "Save Session" with:
+  - Auto-populated guide snapshot (immutable copy, not reference)
+  - Auto-populated date/time stamp
+  - Session metadata form with fields:
+    - Bean origin/name (optional text, max 100 chars)
+    - Coffee dose in grams (number input, 10-60g range)
+    - Final yield in grams/ml (number input, 100-1000ml range)
+    - Water temperature (number input with °C/°F toggle, 80-100°C range)
+    - Grind setting (text/number field, max 50 chars)
+    - Tasting notes (textarea, max 500 chars)
+    - Taste profile (2D coordinates from sliders)
+    - Overall rating (1-5 star rating component)
+- **History Display**:
+  - Reverse-chronological list of saved sessions
+  - Each entry shows: Date/time, guide name, dose→yield ratio, star rating, taste profile mini-indicator
+  - Infinite scroll or pagination for large histories
+  - Search/filter by guide name, date range, or rating
+- **Session Detail View**:
+  - Full session data display
+  - Interactive taste profile visualization (2D graph + sliders)
+  - Brewing recommendations based on taste profile
+  - Notes and metadata in readable format
+- **Session Management**:
+  - Edit saved sessions (updated_at timestamp)
+  - Delete sessions with confirmation dialog
+  - Duplicate session as template for new brew
+
+### 2.3 Taste Profile & Recommendations
+
+**Story**: As a user, I can set a taste profile on a 2D scale and see real-time recommendations.
+
+**UI Components**:
+- **Dual Slider Interface**:
+  - X-axis slider: Sour/Acidic ⟷ Bitter/Harsh
+  - Y-axis slider: Weak/Watery ⟷ Strong/Muddy
+  - 2D crosshair visualization showing combined position
+  - Real-time coordinate display (e.g., "Slightly Bitter, Balanced Strength")
+
+**Acceptance Criteria**:
+- **Slider Behavior**:
+  - Each slider maps to normalized range [-1, 1] internally
+  - Smooth dragging with haptic feedback (mobile)
+  - Debounced updates (300ms) to prevent excessive re-rendering
+  - Visual indicators at key thresholds (-0.33, 0, +0.33)
+- **Real-time Recommendations**:
+  - Recommendations update instantly as user drags sliders
+  - Maximum 3 prioritized, actionable suggestions displayed
+  - Suggestions persist until slider position changes significantly (>0.1 delta)
+- **Session Integration**:
+  - Slider positions auto-saved to session when "Save Session" is triggered
+  - Previous session taste profiles can be recalled and applied
+
+**Recommendation Engine**:
+- **Bitter/Harsh (X > +0.33)**:
+  - Primary: "Grind coarser"
+  - Secondary: "Lower water temp by 1-2°C"
+  - Tertiary: "Reduce contact time" or "Reduce agitation"
+- **Sour/Acidic (X < -0.33)**:
+  - Primary: "Grind finer"
+  - Secondary: "Raise water temp by 1-2°C"
+  - Tertiary: "Increase contact time for better extraction"
+- **Weak/Watery (Y < -0.33)**:
+  - Primary: "Increase coffee dose"
+  - Secondary: "Reduce water ratio (e.g., 1:15 → 1:14)"
+  - Tertiary: "Grind slightly finer"
+- **Strong/Muddy (Y > +0.33)**:
+  - Primary: "Decrease coffee dose"
+  - Secondary: "Increase water ratio (e.g., 1:15 → 1:16)"
+  - Tertiary: "Grind slightly coarser"
+- **Recommendation Logic**:
+  - Combine up to 3 non-conflicting suggestions
+  - Priority order: grind → ratio → temperature → time/agitation
+  - Conflicting advice resolution (e.g., "grind finer" vs "grind coarser")
+
+### 2.4 LocalStorage Service
+
+**Story**: As a developer, I want a typed, versioned storage layer to persist app data safely.
+
+**Acceptance Criteria**:
+- **Service Interface**: Single service module (`LocalStorageService`) exposes CRUD operations for:
+  - Custom brewing guides (mutable, user-created)
+  - Brew sessions (history records)
+  - User preferences (theme, default doses, last-used settings)
+  - Built-in guides (read-only references, not stored locally)
+
+**Core Features**:
+- **Schema Versioning**:
+  - Version-aware data structures with migration hooks
+  - Backward compatibility for older data formats
+  - Graceful degradation for unsupported versions
+- **Data Safety**:
+  - Namespaced keys (e.g., `coffee_app_v1_guides`, `coffee_app_v1_sessions`)
+  - JSON serialization with try/catch error guards
+  - Data validation on read/write operations
+  - Corruption detection and recovery mechanisms
+- **Performance & Limits**:
+  - ETag-style `updated_at` timestamps for change tracking
+  - Storage size monitoring with warning at ~4-5 MB limit
+  - Batch operations for bulk data updates
+  - Lazy loading for large datasets
+- **Developer Experience**:
+  - TypeScript interfaces for all data structures
+  - Feature flag support (`storage.getFlags()`)
+  - Debug mode with detailed logging
+  - Clear error messages and handling
+
+## 3) Technical Architecture
+
+### 3.1 Data Models
+
+**Custom Brewing Guide**:
+```typescript
+interface CustomBrewingGuide extends BrewingMethod {
+  isCustom: true;
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+  authorName?: string;
+}
+```
+
+**Brew Session**:
+```typescript
+interface BrewSession {
+  id: string; // UUID
+  guideSnapshot: BrewingMethod; // Immutable copy
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
+  metadata: {
+    beanOrigin?: string;
+    coffeeDose: number; // grams
+    finalYield: number; // ml
+    waterTemp: number; // celsius
+    grindSetting?: string;
+    notes?: string;
+    tasteProfile: { x: number; y: number }; // [-1, 1] range
+    overallRating: number; // 1-5 scale
+  };
+}
+```
+
+**Storage Schema**:
+```typescript
+interface StorageSchema {
+  version: number;
+  customGuides: CustomBrewingGuide[];
+  sessions: BrewSession[];
+  preferences: UserPreferences & {
+    lastTasteProfile?: { x: number; y: number };
+    temperatureUnit: 'celsius' | 'fahrenheit';
+  };
+  flags: Record<string, boolean>;
+}
+```
+
+### 3.2 Component Architecture
+
+**New Components**:
+- `CustomGuideBuilder` - Form for creating/editing custom guides
+- `TasteProfileSlider` - 2D taste profile interface
+- `BrewSessionForm` - Session saving form
+- `BrewHistory` - History listing and detail views
+- `RecommendationPanel` - Real-time brewing suggestions
+
+**Enhanced Existing Components**:
+- `Timer` - Integration with session saving
+- `Layout` - Navigation to new features
+- `BrewingMethods` - Support for custom guides
+
+### 3.3 Implementation Phases
+
+**Phase 2A - Foundation (Week 1)**:
+1. LocalStorage service implementation
+2. Data model interfaces and validation
+3. Basic custom guide CRUD operations
+
+**Phase 2B - Custom Guides (Week 2)**:
+1. Custom guide builder component
+2. Guide management interface
+3. Integration with existing timer system
+
+**Phase 2C - Sessions & History (Week 3)**:
+1. Session saving functionality
+2. History listing and search
+3. Session detail views and editing
+
+**Phase 2D - Taste Profiling (Week 4)**:
+1. Taste profile slider components
+2. Recommendation engine implementation
+3. Integration with session saving
+4. Testing and refinement
+
+## 4) Success Metrics
+
+- **User Engagement**:
+  - % of users who create at least 1 custom guide
+  - Average number of sessions saved per active user
+  - Taste profile usage rate (% of sessions with taste data)
+- **Feature Adoption**:
+  - Custom guides created vs. built-in guides used
+  - Session save rate (% of completed brews that get saved)
+  - Recommendation engagement (% of users who adjust based on suggestions)
+- **Technical Health**:
+  - LocalStorage usage efficiency
+  - Data migration success rate
+  - Performance impact on existing features

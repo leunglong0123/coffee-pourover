@@ -10,11 +10,13 @@ interface TimerContextType {
   nextStep: BrewingStep | null;
   progressPercent: number;
   stepProgressPercent: number;
+  isCompleted: boolean;
   startTimer: (brewingMethod: BrewingMethod) => void;
   pauseTimer: () => void;
   resumeTimer: () => void;
   resetTimer: () => void;
   skipToNextStep: () => void;
+  completeTimer: () => void;
   brewingMethod: BrewingMethod | null;
 }
 
@@ -25,6 +27,7 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [isPaused, setIsPaused] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [pausedTime, setPausedTime] = useState<number | null>(null);
   const [brewingMethod, setBrewingMethod] = useState<BrewingMethod | null>(null);
@@ -309,6 +312,7 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (elapsedTime >= totalTime) {
           clearInterval(intervalId);
           setIsRunning(false);
+          setIsCompleted(true);
         }
       }
     }, 100); // Update 10 times per second for smooth UI
@@ -321,6 +325,7 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setBrewingMethod(method);
     setTotalTime(method.totalTime);
     setCurrentTime(0);
+    setIsCompleted(false);
     setStartTime(Date.now());
     setPausedTime(null);
     setIsRunning(true);
@@ -351,10 +356,18 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setIsRunning(false);
     setIsPaused(false);
     setCurrentTime(0);
+    setIsCompleted(false);
     setStartTime(null);
     setPausedTime(null);
     // Clear saved timer state from localStorage
     localStorage.removeItem('timerState');
+  };
+
+  const completeTimer = () => {
+    setIsRunning(false);
+    setIsPaused(false);
+    setIsCompleted(true);
+    setCurrentTime(totalTime);
   };
 
   const skipToNextStep = () => {
@@ -389,11 +402,13 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         nextStep,
         progressPercent,
         stepProgressPercent,
+        isCompleted,
         startTimer,
         pauseTimer,
         resumeTimer,
         resetTimer,
         skipToNextStep,
+        completeTimer,
         brewingMethod,
       }}
     >
