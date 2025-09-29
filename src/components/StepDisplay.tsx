@@ -107,7 +107,7 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
   };
 
   // Enhance step description with water amount
-  const enhanceDescription = (step: any, isNext = false) => {
+  const enhanceDescription = (step: any) => {
     if (!step) return '';
 
     const waterAmount = getStepWaterAmount(step);
@@ -237,7 +237,7 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
           </div>
           
           <div className="p-3 bg-primary-50 rounded-md dark:bg-primary-900/20 dark:text-primary-100">
-            <p className="font-medium">{enhanceDescription(nextStep, true)}</p>
+            <p className="font-medium">{enhanceDescription(nextStep)}</p>
           </div>
           
           {nextStep.actionRequired && (
