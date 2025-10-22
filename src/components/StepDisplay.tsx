@@ -13,15 +13,16 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
   adjustedWaterAmount = null,
   coffeeDose = DEFAULT_COFFEE_AMOUNT
 }) => {
-  const { 
-    currentStep, 
-    nextStep, 
-    stepProgressPercent, 
+  const {
+    currentStep,
+    nextStep,
+    stepProgressPercent,
     isRunning,
     skipToNextStep,
     brewingMethod,
     currentTime,
-    totalTime
+    totalTime,
+    stepEnteredTime
   } = useTimer();
 
   // Calculate water adjustment ratio if custom amount is set
@@ -31,7 +32,18 @@ const StepDisplay: React.FC<StepDisplayProps> = ({
     : 1;
 
   // Calculate remaining time for current step
-  const remainingTime = currentStep ? (currentStep.duration - (currentStep.duration * stepProgressPercent / 100)) : 0;
+  const remainingTime = React.useMemo(() => {
+    if (!currentStep) return 0;
+
+    // Calculate time elapsed since entering this step
+    const timeElapsedInStep = currentTime - stepEnteredTime;
+
+    // Calculate remaining time within this step
+    const timeLeft = currentStep.duration - timeElapsedInStep;
+
+    // Ensure we don't show negative time
+    return Math.max(0, timeLeft);
+  }, [currentStep, currentTime, stepEnteredTime]);
   
   // Check if remaining time is less than or equal to 3 seconds
   const isTimeCritical = remainingTime <= 3;

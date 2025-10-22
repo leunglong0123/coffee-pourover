@@ -18,6 +18,8 @@ interface TimerContextType {
   skipToNextStep: () => void;
   completeTimer: () => void;
   brewingMethod: BrewingMethod | null;
+  stepOffset: number;
+  stepEnteredTime: number; // Time when current displayed step was entered
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
@@ -32,6 +34,10 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [pausedTime, setPausedTime] = useState<number | null>(null);
   const [brewingMethod, setBrewingMethod] = useState<BrewingMethod | null>(null);
   const [lastActiveTime, setLastActiveTime] = useState<number | null>(null);
+  const [stepOffset, setStepOffset] = useState(0); // Tracks how many steps user has skipped ahead
+  const [manualStepIndex, setManualStepIndex] = useState<number | null>(null); // Tracks manually selected step
+  const [stepEnteredTime, setStepEnteredTime] = useState(0); // Time when current displayed step was entered
+  const [previousStepId, setPreviousStepId] = useState<string | null>(null); // Track step changes
   
   // Using refs to avoid stale closures in setInterval
   const isRunningRef = useRef(isRunning);
@@ -234,37 +240,73 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     }
 
     let accumulatedTime = 0;
-    let currentStepIndex = -1;
+    let naturalStepIndex = -1;
 
+    // First, find the natural step based on current time
     for (let i = 0; i < brewingMethod.steps.length; i++) {
       const step = brewingMethod.steps[i];
       if (accumulatedTime <= currentTime && currentTime < accumulatedTime + step.duration) {
-        currentStepIndex = i;
+        naturalStepIndex = i;
         break;
       }
       accumulatedTime += step.duration;
     }
 
-    if (currentStepIndex === -1 && currentTime >= totalTime) {
+    if (naturalStepIndex === -1 && currentTime >= totalTime) {
       // We've reached the end
-      return { 
+      return {
         currentStep: brewingMethod.steps[brewingMethod.steps.length - 1],
         nextStep: null
       };
     }
 
-    if (currentStepIndex === -1) {
-      return { currentStep: null, nextStep: brewingMethod.steps[0] };
+    if (naturalStepIndex === -1) {
+      naturalStepIndex = 0;
     }
 
-    const nextStepIndex = currentStepIndex + 1;
+    // Determine which step to show: use manual step if ahead, otherwise use natural
+    let displayStepIndex = naturalStepIndex;
+    if (manualStepIndex !== null && manualStepIndex > naturalStepIndex) {
+      displayStepIndex = Math.min(manualStepIndex, brewingMethod.steps.length - 1);
+    } else if (manualStepIndex !== null && manualStepIndex <= naturalStepIndex) {
+      // Natural time has caught up, clear manual override
+      setManualStepIndex(null);
+    }
+
+    const nextStepIndex = displayStepIndex + 1;
     return {
-      currentStep: brewingMethod.steps[currentStepIndex],
+      currentStep: brewingMethod.steps[displayStepIndex],
       nextStep: nextStepIndex < brewingMethod.steps.length ? brewingMethod.steps[nextStepIndex] : null,
     };
   };
 
   const { currentStep, nextStep } = getCurrentStep();
+
+  // Track when the displayed step changes and update stepEnteredTime
+  useEffect(() => {
+    if (currentStep && currentStep.id !== previousStepId) {
+      setStepEnteredTime(currentTime);
+      setPreviousStepId(currentStep.id);
+    }
+  }, [currentStep, previousStepId, currentTime]);
+
+  // Auto-advance to next step when current step completes
+  useEffect(() => {
+    if (!isRunning || !currentStep || !brewingMethod) return;
+
+    const timeElapsedInStep = currentTime - stepEnteredTime;
+
+    // If the current step has completed, advance to the next one
+    if (timeElapsedInStep >= currentStep.duration) {
+      const currentStepIndex = brewingMethod.steps.findIndex(step => step.id === currentStep.id);
+      const nextStepIndex = currentStepIndex + 1;
+
+      if (nextStepIndex < brewingMethod.steps.length) {
+        // Advance to the next step
+        setManualStepIndex(nextStepIndex);
+      }
+    }
+  }, [currentTime, stepEnteredTime, currentStep, brewingMethod, isRunning]);
 
   // Calculate progress percentages
   const progressPercent = totalTime > 0 ? (currentTime / totalTime) * 100 : 0;
@@ -272,17 +314,15 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   // Calculate step progress
   const calculateStepProgress = (): number => {
     if (!currentStep || !isRunning) return 0;
-    
-    let accumulatedTime = 0;
-    for (const step of brewingMethod?.steps || []) {
-      if (step.id === currentStep.id) {
-        break;
-      }
-      accumulatedTime += step.duration;
-    }
-    
-    const timeInCurrentStep = currentTime - accumulatedTime;
-    return (timeInCurrentStep / currentStep.duration) * 100;
+
+    // Calculate time elapsed since entering this step
+    const timeElapsedInStep = currentTime - stepEnteredTime;
+
+    // Calculate progress percentage
+    const progress = (timeElapsedInStep / currentStep.duration) * 100;
+
+    // Clamp progress between 0 and 100
+    return Math.max(0, Math.min(100, progress));
   };
   
   const stepProgressPercent = calculateStepProgress();
@@ -330,6 +370,10 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setPausedTime(null);
     setIsRunning(true);
     setIsPaused(false);
+    setStepOffset(0);
+    setManualStepIndex(null);
+    setStepEnteredTime(0);
+    setPreviousStepId(null);
   };
 
   const pauseTimer = () => {
@@ -359,6 +403,10 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setIsCompleted(false);
     setStartTime(null);
     setPausedTime(null);
+    setStepOffset(0);
+    setManualStepIndex(null);
+    setStepEnteredTime(0);
+    setPreviousStepId(null);
     // Clear saved timer state from localStorage
     localStorage.removeItem('timerState');
   };
@@ -372,23 +420,13 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
   const skipToNextStep = () => {
     if (!currentStep || !nextStep || !brewingMethod) return;
-    
-    // Calculate the time to jump to (end of current step)
-    let timeToJumpTo = 0;
-    for (const step of brewingMethod.steps) {
-      timeToJumpTo += step.duration;
-      if (step.id === currentStep.id) {
-        break;
-      }
-    }
-    
-    // Update the current time
-    setCurrentTime(timeToJumpTo);
-    
-    // Adjust the start time to maintain proper timing
-    const timeDifference = timeToJumpTo - currentTimeRef.current;
-    setStartTime(prevStart => prevStart ? prevStart - (timeDifference * 1000) : Date.now());
-    setPausedTime(null);
+
+    // Find the current displayed step index
+    const currentDisplayIndex = brewingMethod.steps.findIndex(step => step.id === currentStep.id);
+
+    // Set manual step to the next step without advancing the timer
+    // This allows users to preview the next step while the timer continues
+    setManualStepIndex(currentDisplayIndex + 1);
   };
 
   return (
@@ -410,6 +448,8 @@ export const TimerProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         skipToNextStep,
         completeTimer,
         brewingMethod,
+        stepOffset,
+        stepEnteredTime,
       }}
     >
       {children}

@@ -233,32 +233,6 @@ export const getBlogPostBySlug = (slug: string): BlogPost | null => {
   return posts.find(post => post.slug === slug) || null;
 };
 
-// Get related blog posts
-export const getRelatedBlogPosts = (postId: string): BlogPost[] => {
-  const posts = getAllBlogPosts();
-  const currentPost = posts.find(post => post.id === postId);
-  
-  if (!currentPost || !currentPost.relatedPosts || currentPost.relatedPosts.length === 0) {
-    // If no related posts defined, return posts with common tags
-    const relatedByTags = posts
-      .filter(post => post.id !== postId && post.tags.some(tag => currentPost.tags.includes(tag)))
-      .slice(0, 3);
-    
-    if (relatedByTags.length > 0) {
-      return relatedByTags;
-    }
-    
-    // If still no matches, return most recent posts
-    return posts
-      .filter(post => post.id !== postId)
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 3);
-  }
-  
-  // Return specified related posts
-  return posts.filter(post => currentPost.relatedPosts?.includes(post.id));
-};
-
 // Create a new blog post
 export const createBlogPost = (postData: Omit<BlogPost, 'id' | 'slug' | 'readingTime'>): BlogPost => {
   const posts = getAllBlogPosts();

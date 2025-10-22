@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { BrewingMethod, BrewingStep, GRIND_SIZES, VISUAL_INDICATORS, ACTION_TYPES, calculateTotalWaterPortions, validateWaterPortions, calculateWaterAmount } from '../models';
+import { BrewingMethod, BrewingStep, GRIND_SIZES, VISUAL_INDICATORS, calculateTotalWaterPortions, validateWaterPortions, calculateWaterAmount } from '../models';
 import LocalStorageService, { CustomBrewingGuide } from '../services/LocalStorageService';
 import { brewingMethods } from '../utils/brewingMethods';
 
