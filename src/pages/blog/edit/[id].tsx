@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Layout from '../../../components/Layout';
 import BlogPostForm from '../../../components/BlogPostForm';
 import { BlogPost } from '../../../utils/blogTypes';
-import { getBlogPostBySlug, getAllBlogPosts } from '../../../utils/blogService';
+import { getAllBlogPosts } from '../../../utils/blogService';
 
 const EditBlogPost: React.FC = () => {
   const router = useRouter();

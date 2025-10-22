@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import Layout from '../../components/Layout';
@@ -7,7 +6,6 @@ import { getAllBlogPosts, deleteBlogPost } from '../../utils/blogService';
 import { BlogPost } from '../../utils/blogTypes';
 
 const BlogAdmin: React.FC = () => {
-  const router = useRouter();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);

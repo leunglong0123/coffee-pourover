@@ -29,7 +29,7 @@ const GuidesPage: NextPage = () => {
     }
   };
 
-  const handleSaveGuide = (guide: CustomBrewingGuide) => {
+  const handleSaveGuide = (_guide: CustomBrewingGuide) => {
     setShowBuilder(false);
     setEditingGuide(null);
     loadCustomGuides();

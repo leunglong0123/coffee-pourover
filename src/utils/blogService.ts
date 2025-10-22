@@ -328,14 +328,29 @@ export const getBlogPostsByTag = (tag: string): BlogPost[] => {
 // Search blog posts
 export const searchBlogPosts = (query: string): BlogPost[] => {
   if (!query.trim()) return [];
-  
+
   const posts = getAllBlogPosts();
   const lowerQuery = query.toLowerCase();
-  
-  return posts.filter(post => 
+
+  return posts.filter(post =>
     post.title.toLowerCase().includes(lowerQuery) ||
     post.content.toLowerCase().includes(lowerQuery) ||
     post.excerpt.toLowerCase().includes(lowerQuery) ||
     post.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
   );
+};
+
+// Get related blog posts
+export const getRelatedBlogPosts = (postId: string): BlogPost[] => {
+  const posts = getAllBlogPosts();
+  const currentPost = posts.find(post => post.id === postId);
+
+  if (!currentPost || !currentPost.relatedPosts) {
+    return [];
+  }
+
+  // Get the blog posts for the related post IDs
+  return currentPost.relatedPosts
+    .map(relatedId => posts.find(post => post.id === relatedId))
+    .filter((post): post is BlogPost => post !== undefined);
 }; 

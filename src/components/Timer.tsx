@@ -36,7 +36,7 @@ const Timer: React.FC<TimerProps> = ({ className = '' }) => {
     ? 'paused'
     : 'running';
 
-  const handleSessionSave = (session: BrewSession) => {
+  const handleSessionSave = (_session: BrewSession) => {
     setShowSessionForm(false);
     resetTimer();
     // You could add a success toast here
