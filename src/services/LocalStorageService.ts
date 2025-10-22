@@ -29,13 +29,13 @@ interface ExtendedUserPreferences extends UserPreferences {
   temperatureUnit: 'celsius' | 'fahrenheit';
 }
 
-interface StorageSchema {
-  version: number;
-  customGuides: CustomBrewingGuide[];
-  sessions: BrewSession[];
-  preferences: ExtendedUserPreferences;
-  flags: Record<string, boolean>;
-}
+// interface StorageSchema {
+//   version: number;
+//   customGuides: CustomBrewingGuide[];
+//   sessions: BrewSession[];
+//   preferences: ExtendedUserPreferences;
+//   flags: Record<string, boolean>;
+// }
 
 type StorageKey = 'customGuides' | 'sessions' | 'preferences' | 'flags';
 

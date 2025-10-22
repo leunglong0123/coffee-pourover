@@ -5,7 +5,7 @@ import Layout from '../../components/Layout';
 import Timer from '../../components/Timer';
 import StepDisplay from '../../components/StepDisplay';
 import CoffeeAmount from '../../components/CoffeeAmount';
-import FourSixMethodInfo from '../../components/FourSixMethodInfo';
+// import FourSixMethodInfo from '../../components/FourSixMethodInfo';
 import { useTimer } from '../../context/TimerContext';
 import { getBrewingMethodById, v60Method } from '../../utils/brewingMethods';
 import { BrewingMethod, calculateWaterAmount, DEFAULT_COFFEE_AMOUNT } from '../../models';
